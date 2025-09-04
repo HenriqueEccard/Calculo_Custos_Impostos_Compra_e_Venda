@@ -24,15 +24,25 @@ from PySide6.QtCore import Qt
 # FUNÇÃO caminho_recurso
 # -----------------------------
 def caminho_recurso(relativo):
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relativo) #type: ignore
+    """Retorna o caminho absoluto para um recurso quando empacotado ou rodando no Python"""
+    if hasattr(sys, "_MEIPASS"):
+        # Usado apenas para arquivos de leitura (ex: ícones, imagens)
+        return os.path.join(sys._MEIPASS, relativo)  # type: ignore
     return os.path.join(os.path.abspath("."), relativo)
 
 # -----------------------------
 # DEFINIR OS CAMINHOS
 # -----------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_FILE = os.path.join(BASE_DIR, "caminho_banco.db")
+# Diretório onde o executável ou script está rodando
+if getattr(sys, 'frozen', False):  # executável PyInstaller
+    BASE_DIR = os.path.dirname(sys.executable)
+else:  # script Python normal
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Banco de dados fica sempre fora do .exe, persistente
+DB_FILE = os.path.join(BASE_DIR, "licitacao.db")
+
+# Pasta de relatórios ao lado do programa
 REPORTS_DIR = os.path.join(BASE_DIR, "reports")
 os.makedirs(REPORTS_DIR, exist_ok=True)
 
